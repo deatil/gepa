@@ -119,6 +119,36 @@ func Test_Singleton(t *testing.T) {
     eq(tb33.Get(), "222222222", "Test_Singleton")
 }
 
+func Test_Bind2(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := DI()
+    di.Bind("testBind22222", func() *testSingleton {
+        ss := &testSingleton{}
+        ss.Set("111111111")
+        return ss
+    })
+    tb := di.Get("testBind22222")
+
+    tb2, ok := tb.(*testSingleton)
+    if !ok {
+        t.Error("testBind22222 get fail")
+    }
+
+    eq(tb2.Get(), "111111111", "Test_Bind2")
+
+    tb2.Set("222222222")
+    eq(tb2.Get(), "222222222", "Test_Bind2")
+
+    tb3 := di.Get("testBind22222")
+    tb33, ok := tb3.(*testSingleton)
+    if !ok {
+        t.Error("testBind22222 get fail")
+    }
+
+    eq(tb33.Get(), "111111111", "Test_Bind2")
+}
+
 func Test_BindWithShared(t *testing.T) {
     eq := assertDeepEqualT(t)
 
