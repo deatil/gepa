@@ -4,6 +4,10 @@ import (
     "testing"
 )
 
+type ItestBind interface {
+    Data() string
+}
+
 type testBind struct {}
 
 func (t *testBind) Data() string {
@@ -400,4 +404,50 @@ func Test_GetAlias(t *testing.T) {
     res := di.GetAlias("testBind333")
 
     eq(res, "testBind", "Test_GetAlias")
+}
+
+func Test_Provide(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Provide(func() *testBind {
+        return &testBind{}
+    })
+    di.Invoke(func(tb *testBind) {
+        eq(tb.Data(), "testBind data", "Test_Provide")
+    })
+}
+
+func Test_ifUseInterface(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    tt := &testBind{}
+
+    res := ifInterface[ItestBind](tt)
+
+    eq(res, true, "Test_ifUseInterface")
+}
+
+func Test_Provide2(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Provide(func() *testBind {
+        return &testBind{}
+    })
+    di.Invoke(func(tb ItestBind) {
+        eq(tb.Data(), "testBind data", "Test_Provide2")
+    })
+}
+
+func Test_Provide3(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Provide(func() ItestBind {
+        return &testBind{}
+    })
+    di.Invoke(func(tb ItestBind) {
+        eq(tb.Data(), "testBind data", "Test_Provide3")
+    })
 }
