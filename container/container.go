@@ -63,7 +63,15 @@ func (this *Container) Provide(fn any) error {
 
     outs := this.Call(fn, nil)
 
+    var errPtr *error
+    errType := reflect.TypeOf(errPtr).Elem()
+
     for i := 0; i < numOut; i++ {
+        outValue := reflect.ValueOf(outs[i])
+        if ifImplements(outValue.Type(), errType) && !outValue.IsNil() {
+            return outs[i].(error)
+        }
+
         if isStruct(outs[i]) {
             abstract := getTypeName(fnType.Out(i))
 

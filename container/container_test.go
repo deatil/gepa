@@ -1,6 +1,7 @@
 package container
 
 import (
+    "errors"
     "testing"
     "reflect"
 )
@@ -491,6 +492,18 @@ func Test_Provide(t *testing.T) {
     di.Invoke(func(tb *testBind) {
         eq(tb.Data(), "testBind data", "Test_Provide")
     })
+}
+
+func Test_ProvideReturnError(t *testing.T) {
+    di := New()
+    err := di.Provide(func() (*testBind, error) {
+        return &testBind{}, errors.New("Provide error")
+    })
+
+    if err.Error() != "Provide error" {
+        t.Error("Provide use fail")
+    }
+
 }
 
 func Test_ifUseInterface(t *testing.T) {
